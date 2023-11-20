@@ -1,9 +1,9 @@
 'use client'; //a lot of things seem to break if you're in "server mode", which is what it defaults to. This sets us up as a client, I believe.
-import Image from 'next/image' //this was just part of the pre-made page; presumably the image that was in the center.
 import React, { useEffect, useState } from 'react'; //this is for hooks, used to maintain state of things in functional components.
 import { Component } from 'react'; //this is for class components.
 import ReactDOM from "react-dom/client"; //full disclosure, I'm not sure what this does yet
 import axios from 'axios';
+import Select from 'react-select';
 
 //this is a functional Component. Components are the bread-and-butter of React.
 export default function Home() {
@@ -14,8 +14,6 @@ export default function Home() {
   //  const [state, setState] = useState(initialState);
   //
 
-const [count, setCount] = useState(0);
-
 const [buttonText1, setButtonText1] = useState("");
 const [buttonText2, setButtonText2] = useState("");
 const [buttonText3, setButtonText3] = useState("");
@@ -24,27 +22,26 @@ const [buttonText5, setButtonText5] = useState("");
 const [buttonText6, setButtonText6] = useState("");
 const [buttonText7, setButtonText7] = useState("");
 
-const [mysteryButtonColor1, setMysteryButtonColor1] = useState('black');
-const [mysteryButtonColor2, setMysteryButtonColor2] = useState('black');
-const [mysteryButtonColor3, setMysteryButtonColor3] = useState('black');
-const [mysteryButtonColor4, setMysteryButtonColor4] = useState('black');
-const [mysteryButtonColor5, setMysteryButtonColor5] = useState('black');
-const [mysteryButtonColor6, setMysteryButtonColor6] = useState('black');
-const [mysteryButtonColor7, setMysteryButtonColor7] = useState('black');
+//these are for keeping track of the Select data
+const [selectedStatGeneratorMethod, setSelectedStatGeneratorMethod] = useState("3d6");
 
-const [mysteryButtonBorder1, setMysteryButtonBorder1] = useState('solid white 2px');
-const [mysteryButtonBorder2, setMysteryButtonBorder2] = useState('solid white 2px');
-const [mysteryButtonBorder3, setMysteryButtonBorder3] = useState('solid white 2px');
-const [mysteryButtonBorder4, setMysteryButtonBorder4] = useState('solid white 2px');
-const [mysteryButtonBorder5, setMysteryButtonBorder5] = useState('solid white 2px');
-const [mysteryButtonBorder6, setMysteryButtonBorder6] = useState('solid white 2px');
-const [mysteryButtonBorder7, setMysteryButtonBorder7] = useState('solid white 2px');
+const [generatorButtonColor1, setgeneratorButtonColor1] = useState("hsl(60, 50%, 75%)");
+const [generatorButtonColor2, setgeneratorButtonColor2] = useState("hsl(60, 50%, 75%)");
+const [generatorButtonColor3, setgeneratorButtonColor3] = useState("hsl(60, 50%, 75%)");
+const [generatorButtonColor4, setgeneratorButtonColor4] = useState("hsl(60, 50%, 75%)");
+const [generatorButtonColor5, setgeneratorButtonColor5] = useState("hsl(60, 50%, 75%)");
+const [generatorButtonColor6, setgeneratorButtonColor6] = useState("hsl(60, 50%, 75%)");
+const [generatorButtonColor7, setgeneratorButtonColor7] = useState("hsl(60, 50%, 75%)");
 
-const [colorRandomizerText, setColorRandomizerText] = useState('');
-const [colorRandomizerValue, setColorRandomizerValue] = useState('#ffffff');
-const [colorRandomizerTextColor, setColorRandomizerTextColor] = useState("#000000");
+const [generatorButtonShadow1, setgeneratorButtonShadow1] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
+const [generatorButtonShadow2, setgeneratorButtonShadow2] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
+const [generatorButtonShadow3, setgeneratorButtonShadow3] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
+const [generatorButtonShadow4, setgeneratorButtonShadow4] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
+const [generatorButtonShadow5, setgeneratorButtonShadow5] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
+const [generatorButtonShadow6, setgeneratorButtonShadow6] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
+const [generatorButtonShadow7, setgeneratorButtonShadow7] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
 
-//can presumably simplify this down; this is just thhe fastest way right now
+//these hooks are how we're taking things from our initial axios queries, to my understanding. Don't treat these as part of the player character.
 const [cantrips, setCantrips] = useState([]);
 const [levelOneSpells, setLevelOneSpells] = useState([]);
 const [levelTwoSpells, setLevelTwoSpells] = useState([]);
@@ -61,6 +58,18 @@ const [magicItems, setMagicItems] = useState([]);
 const [inventoryItems, setInventoryItems] = useState([]);
 const [characterClass, setCharacterClass] = useState([]);
 const [characterRace, setCharacterRace] = useState([]);
+
+//this is supposed to keep track of the player character's spell list after generation, in case for example the player wants to add a new spell later.
+const [playerCharacterCantripArray, setPlayerCharacterCantripArray] = useState([]);
+const [playerCharacterFirstLevelSpellArray, setPlayerCharacterFirstLevelSpellArray] = useState([]);
+const [playerCharacterSecondLevelSpellArray, setPlayerCharacterSecondLevelSpellArray] = useState([]);
+const [playerCharacterThirdLevelSpellArray, setPlayerCharacterThirdLevelSpellArray] = useState([]);
+const [playerCharacterFourthLevelSpellArray, setPlayerCharacterFourthLevelSpellArray] = useState([]);
+const [playerCharacterFifthLevelSpellArray, setPlayerCharacterFifthLevelSpellArray] = useState([]);
+const [playerCharacterSixthLevelSpellArray, setPlayerCharacterSixthLevelSpellArray] = useState([]);
+const [playerCharacterSeventhLevelSpellArray, setPlayerCharacterSeventhLevelSpellArray] = useState([]);
+const [playerCharacterEighthLevelSpellArray, setPlayerCharacterEighthLevelSpellArray] = useState([]);
+const [playerCharacterNinthLevelSpellArray, setPlayerCharacterNinthLevelSpellArray] = useState([]);
 
 const characterRaceArray = [];
 const characterClassArray = [];
@@ -83,27 +92,29 @@ const magicItemsArray = [];
 const crListArray = [0, 0.125, 0.25, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
 
 //structured with slight whitespace formatting for ease of human legibility
-const leveledSpellTotals = {
-  first_level_character_values:       [2, 0, 0, 0, 0, 0, 0, 0, 0],
-  second_level_character_values:      [3, 0, 0, 0, 0, 0, 0, 0, 0],
-  third_level_character_values:       [4, 2, 0, 0, 0, 0, 0, 0, 0],
-  fourth_level_character_values:      [4, 3, 0, 0, 0, 0, 0, 0, 0],
-  fifth_level_character_values:       [4, 3, 2, 0, 0, 0, 0, 0, 0],
-  sixth_level_character_values:       [4, 3, 3, 0, 0, 0, 0, 0, 0],
-  seventh_level_character_values:     [4, 3, 3, 1, 0, 0, 0, 0, 0],
-  eighth_level_character_values:      [4, 3, 3, 2, 0, 0, 0, 0, 0],
-  ninth_level_character_values:       [4, 3, 3, 3, 1, 0, 0, 0, 0],
-  tenth_level_character_values:       [4, 3, 3, 3, 2, 0, 0, 0, 0],
-  eleventh_level_character_values:    [4, 3, 3, 3, 2, 1, 0, 0, 0],
-  twelfth_level_character_values:     [4, 3, 3, 3, 2, 1, 0, 0, 0],
-  thirteenth_level_character_values:  [4, 3, 3, 3, 2, 1, 1, 0, 0],
-  fourteenth_level_character_values:  [4, 3, 3, 3, 2, 1, 1, 0, 0],
-  fifteenth_level_character_values:   [4, 3, 3, 3, 2, 1, 1, 1, 0],
-  sixteenth_level_character_values:   [4, 3, 3, 3, 2, 1, 1, 1, 0],
-  seventeenth_level_character_values: [4, 3, 3, 3, 2, 1, 1, 1, 1],
-  eighteenth_level_character_values:  [4, 3, 3, 3, 3, 1, 1, 1, 1],
-  nineteenth_level_character_values:  [4, 3, 3, 3, 3, 2, 1, 1, 1],
-  twentieth_level_character_values:   [4, 3, 3, 3, 3, 2, 2, 1, 1],
+//of note, these are spell SLOTS, not spells known. Use this for what spell levels you can get access to, maybe
+
+const highestSlotAvailable = {
+  first_level: 1,
+  second_level: 1,
+  third_level: 2,
+  fourth_level: 2,
+  fifth_level: 3,
+  sixth_level: 3,
+  seventh_level: 4,
+  eighth_level: 4,
+  ninth_level: 5,
+  tenth_level: 5,
+  eleventh_level: 6,
+  twelfth_level: 6,
+  thirteenth_level: 7,
+  fourteenth_level: 7,
+  fifteenth_level: 8,
+  sixteenth_level: 8,
+  seventeenth_level: 9,
+  eighteenth_level: 9,
+  nineteenth_level: 9,
+  twentieth_level: 9
 }
 
 //for the time being, our dataset is incapable of generating Artificers.
@@ -185,6 +196,26 @@ const characterClasses = {
             has_unarmored_defense: false }
 }
 
+//we need this to format a full spell list, because even if it's empty, we need SOMETHING.
+interface FullSpellList {
+  cantrips: string[];
+  first_level_spells: string[];
+  second_level_spells: string[];
+  third_level_spells: string[];
+  fourth_level_spells: string[];
+  fifth_level_spells: string[];
+  sixth_level_spells: string[];
+  seventh_level_spells: string[];
+  eighth_level_spells: string[];
+  ninth_level_spells: string[];
+}
+
+//for the sake of simplicity, let's categorize unarmored defense as a type of armor
+interface ArmorCalculation {
+  equipped_armor: string;
+  stats: Array<number>;
+}
+
 //I know very well that this is not the idea way to do this; let's try it first and then work it out.
 const monsterBufferArray = [];
 
@@ -202,11 +233,14 @@ const playerCharacter = {
   subclass: null,
   race: null,
   subrace: null,
-  primary_attribute: [],
-  secondary_attribute: [],
+  //these are default 'safe' values for most characters, to be overridden by the process of making a full character.
+  primary_attribute: ["STR", "DEX"],
+  secondary_attribute: ["DEX", "CON"],
   stats: [null, null, null, null, null, null],
   magic_items: [],
   inventory: [],
+  numberOfCantrips: null,
+  isHalfCaster: false,
   cantrips: [],
   first_level_spells: [],
   second_level_spells: [],
@@ -364,7 +398,7 @@ useEffect(() => {
   }, []);
 
 
-//mapping stuff from GET requests to arrays.
+//this takes the results from the axios queries and puts them into arrays. They can then be used client-side without any hassle.
 cantrips.map((data) => { cantripSpellArray.push(data.name); });
 levelOneSpells.map((data) => { levelOneSpellArray.push(data.name); });
 levelTwoSpells.map((data) => { levelTwoSpellArray.push(data.name); });
@@ -446,58 +480,42 @@ function sortArrayAscending(inputArray: number[]) {
 }
 
 //this is a react Function Component
+//to my understanding, this takes an existing array and puts it into formatted markup
 function StructuredArray(inputArray: string[]){
   const listItems = inputArray.map((listElement) => <li key={listElement}> {listElement} </li>);
   return <ul> {listItems} </ul>;
 }
 
-//this needs an input that assuredly has 10 separate arrays in it... can you specify Object here?
-function StructuredSpellList(){
+//this needs an input that assuredly has 10 separate arrays in it... we'll use the interface we made earlier
+//incidentally, for clarity this is to be a React Component
+// function StructuredSpellList(playerSpellList: FullSpellList){
 
-}
-
-// function UpdatingList() {
-//   const [name, setName] = useState('');
-//   const [artists, setArtists] = useState([]);
-
-//   return (
-//     <>
-//       <h1> Inspiring Sculptors: </h1>
-//       <input
-//         value = {name}
-//         onChange = {e => setName(e.target.value)}
-//       />
-//       <button onClick = {() => {
-//         setArtists([
-//           ...artists,
-//           { id: nextId++, name: name }
-//           ]);
-//       }}>Add</button>
-//       <ul>
-//         {artists.map(artist => (
-//           <li key = {artist.id}> {artist.name} </li>
-//         ))}
-//       </ul>
-//     </>
-//   );
 // }
 
 // generates a random spell of ANY level if unparameterized, or one of the chosen level if given args.
-function getRandomSpell(spellValue: number){
-  let randomizedValue = null;
+function getRandomSpell(spellLevel: number){
+  let randomizedValue: number = null;
   let outputString: string = null;
-  switch(spellValue){
+  let generatedSpell: string = null;
+  switch(spellLevel){
     case 0:
       randomizedValue = Math.floor(Math.random() * cantripSpellArray.length);
-      outputString = "Cantrip: " + cantripSpellArray[randomizedValue];
+      generatedSpell = cantripSpellArray[randomizedValue];
+
+      //playerCharacter.cantrips.push(generatedSpell);
+      outputString = "Cantrip: " + generatedSpell;
       break;
     case 1:
       randomizedValue = Math.floor(Math.random() * levelOneSpellArray.length);
-      outputString = "First Level Spell: " + levelOneSpellArray[randomizedValue];
+      generatedSpell = levelOneSpellArray[randomizedValue];
+      playerCharacter.first_level_spells.push(generatedSpell);
+      outputString = "First Level Spell: " + generatedSpell;
       break;
     case 2:
       randomizedValue = Math.floor(Math.random() * levelTwoSpellArray.length);
-      outputString = "Second Level Spell: " + levelTwoSpellArray[randomizedValue];
+      generatedSpell = levelTwoSpellArray[randomizedValue];
+      playerCharacter.second_level_spells.push(generatedSpell);
+      outputString = "Second Level Spell: " + generatedSpell;
       break;
     case 3:
       randomizedValue = Math.floor(Math.random() * levelThreeSpellArray.length);
@@ -534,88 +552,188 @@ function getRandomSpell(spellValue: number){
       break;
   }
   if (outputString !== null){
+    console.log(playerCharacter);
     return outputString;
   }
 }
 
-function addRandomSpelltoPlayer(spellValue: number){
-  let randomizedValue = null;
+function addRandomSpelltoPlayer(spellLevel: number, playerSpellList: FullSpellList){
+  let randomizedValue: number = null;
   let outputString: string = null;
-  switch(spellValue){
+  let spellAdded: boolean = false;
+  //checks for valid range
+  switch(spellLevel){
     case 0:
-      randomizedValue = Math.floor(Math.random() * cantripSpellArray.length);
-      outputString = "Cantrip: " + cantripSpellArray[randomizedValue];
-      playerCharacter.cantrips.push(outputString);
+      let spellAdded = false;
+      while (!spellAdded){
+        randomizedValue = Math.floor(Math.random() * cantripSpellArray.length);
+      //output string is the cantrip by name
+        outputString = cantripSpellArray[randomizedValue];
+        if(!playerCharacter.cantrips.includes(outputString)){
+          playerCharacter.cantrips.push(outputString);
+          spellAdded = true;
+        }
+      }
       break;
     case 1:
-      randomizedValue = Math.floor(Math.random() * levelOneSpellArray.length);
-      outputString = "First Level Spell: " + levelOneSpellArray[randomizedValue];
-      playerCharacter.first_level_spells.push(outputString);
+      spellAdded = false;
+      while (!spellAdded){
+        randomizedValue = Math.floor(Math.random() * levelOneSpellArray.length);
+      //output string is the cantrip by name
+        outputString = levelOneSpellArray[randomizedValue];
+        if(!playerCharacter.first_level_spells.includes(outputString)){
+          playerCharacter.first_level_spells.push(outputString);
+          spellAdded = true;
+        }
+      }
       break;
     case 2:
-      randomizedValue = Math.floor(Math.random() * levelTwoSpellArray.length);
-      outputString = "Second Level Spell: " + levelTwoSpellArray[randomizedValue];
-      playerCharacter.second_level_spells.push(outputString);
+      spellAdded = false;
+      while (!spellAdded){
+        randomizedValue = Math.floor(Math.random() * levelTwoSpellArray.length);
+      //output string is the cantrip by name
+        outputString = levelTwoSpellArray[randomizedValue];
+        if(!playerCharacter.second_level_spells.includes(outputString)){
+          playerCharacter.second_level_spells.push(outputString);
+          spellAdded = true;
+        }
+      }
       break;
     case 3:
-      randomizedValue = Math.floor(Math.random() * levelThreeSpellArray.length);
-      outputString = "Third Level Spell: " +  levelThreeSpellArray[randomizedValue];
-      playerCharacter.third_level_spells.push(outputString);
+      spellAdded = false;
+      while (!spellAdded){
+        randomizedValue = Math.floor(Math.random() * levelThreeSpellArray.length);
+      //output string is the cantrip by name
+        outputString = levelThreeSpellArray[randomizedValue];
+        if(!playerCharacter.third_level_spells.includes(outputString)){
+          playerCharacter.third_level_spells.push(outputString);
+          spellAdded = true;
+        }
+      }
       break;
     case 4:
-      randomizedValue = Math.floor(Math.random() * levelFourSpellArray.length);
-      outputString = "Fourth Level Spell: " +  levelFourSpellArray[randomizedValue];
-      playerCharacter.fourth_level_spells.push(outputString);
+      spellAdded = false;
+      while (!spellAdded){
+        randomizedValue = Math.floor(Math.random() * levelFourSpellArray.length);
+      //output string is the cantrip by name
+        outputString = levelFourSpellArray[randomizedValue];
+        if(!playerCharacter.fourth_level_spells.includes(outputString)){
+          playerCharacter.fourth_level_spells.push(outputString);
+          spellAdded = true;
+        }
+      }
       break;
     case 5:
-      randomizedValue = Math.floor(Math.random() * levelFiveSpellArray.length);
-      outputString = "Fifth Level Spell: " + levelFiveSpellArray[randomizedValue];
-      playerCharacter.fifth_level_spells.push(outputString);
+      spellAdded = false;
+      while (!spellAdded){
+        randomizedValue = Math.floor(Math.random() * levelFiveSpellArray.length);
+      //output string is the cantrip by name
+        outputString = levelFiveSpellArray[randomizedValue];
+        if(!playerCharacter.fifth_level_spells.includes(outputString)){
+          playerCharacter.fifth_level_spells.push(outputString);
+          spellAdded = true;
+        }
+      }
       break;
     case 6:
-      randomizedValue = Math.floor(Math.random() * levelSixSpellArray.length);
-      outputString = "Sixth Level Spell: " +  levelSixSpellArray[randomizedValue];
-      playerCharacter.sixth_level_spells.push(outputString);
+      spellAdded = false;
+      while (!spellAdded){
+        randomizedValue = Math.floor(Math.random() * levelSixSpellArray.length);
+      //output string is the cantrip by name
+        outputString = levelSixSpellArray[randomizedValue];
+        if(!playerCharacter.sixth_level_spells.includes(outputString)){
+          playerCharacter.sixth_level_spells.push(outputString);
+          spellAdded = true;
+        }
+      }
       break;
     case 7:
-      randomizedValue = Math.floor(Math.random() * levelSevenSpellArray.length);
-      outputString = "Seventh Level Spell: " +  levelSevenSpellArray[randomizedValue];
-      playerCharacter.seventh_level_spells.push(outputString);
+      spellAdded = false;
+      while (!spellAdded){
+        randomizedValue = Math.floor(Math.random() * levelSevenSpellArray.length);
+      //output string is the cantrip by name
+        outputString = levelSevenSpellArray[randomizedValue];
+        if(!playerCharacter.seventh_level_spells.includes(outputString)){
+          playerCharacter.seventh_level_spells.push(outputString);
+          spellAdded = true;
+        }
+      }
       break;
     case 8:
-      randomizedValue = Math.floor(Math.random() * levelEightSpellArray.length);
-      outputString = "Eighth Level Spell: " +  levelEightSpellArray[randomizedValue];
-      playerCharacter.eighth_level_spells.push(outputString);
+      spellAdded = false;
+      while (!spellAdded){
+        randomizedValue = Math.floor(Math.random() * levelEightSpellArray.length);
+      //output string is the cantrip by name
+        outputString = levelEightSpellArray[randomizedValue];
+        if(!playerCharacter.eighth_level_spells.includes(outputString)){
+          playerCharacter.eighth_level_spells.push(outputString);
+          spellAdded = true;
+        }
+      }
       break;
     case 9:
-      randomizedValue = Math.floor(Math.random() * levelNineSpellArray.length);
-      outputString = "Ninth Level Spell: " +  levelNineSpellArray[randomizedValue];
-      playerCharacter.ninth_level_spells.push(outputString);
+      spellAdded = false;
+      while (!spellAdded){
+        randomizedValue = Math.floor(Math.random() * levelNineSpellArray.length);
+      //output string is the cantrip by name
+        outputString = levelNineSpellArray[randomizedValue];
+        if(!playerCharacter.ninth_level_spells.includes(outputString)){
+          playerCharacter.ninth_level_spells.push(outputString);
+          spellAdded = true;
+        }
+      }
       break;
     default:
       //0 - 9 gets determined at random, then we run the function recursively
       let spellLevelIndex = Math.floor(Math.random() * 10);
-      outputString = addRandomSpelltoPlayer(spellLevelIndex);
+      outputString = addRandomSpelltoPlayer(spellLevelIndex, playerSpellList);
       break;
   }
 }
 
-function getMultipleSpells(amountToGenerate: number){
+//if spellLevel is -1, the default, the method generates an unparameterized getRandomSpell().
+//if spellLevel is anything else, the method generates based on that spell level.
+//-1 should never happen outside of the default case, it's just there to not be 0 - 9
+//of note, this method doesn't currently push to the player's spell lists individually, just to this mish-mash
+function getMultipleSpells(amountToGenerate: number, spellLevel: number = -1){
   let generatedSpellArray: string[] = [];
   let spellsRemaining: number = amountToGenerate;
   while (spellsRemaining > 0){
-    let generatedSpell = getRandomSpell();
-    if (!generatedSpellArray.includes(generatedSpell)){
-      generatedSpellArray.push(generatedSpell);
-      spellsRemaining--;
+    if(spellLevel === -1){
+      let generatedSpell = getRandomSpell();
+      if (!generatedSpellArray.includes(generatedSpell)){
+        generatedSpellArray.push(generatedSpell);
+        spellsRemaining--;
+      }
+    }
+    else{
+      let generatedSpell = getRandomSpell(spellLevel);
+      if (!generatedSpellArray.includes(generatedSpell)){
+        generatedSpellArray.push(generatedSpell);
+        spellsRemaining--;
+      }
     }
   }
   return generatedSpellArray;
 }
 
-//TODO
-function generateSpellList(){
+//start with simple version first and then improve the logic from there
+/*
+this needs to do a specific set of things:
+1.) it needs to generate a number of spells per spell level equal to a parameter given.
+2.) it needs to double-check that a spell is not already in the list it's adding to. [this is accomplished by the generator method, don't worry about this]
+3.) it needs to do DIFFERENT things based on player LEVEL, since e.g. a first level character doesn't have access to/need second level spells.
+4.) it needs to do DIFFERENT things based on player CLASS, since different classes get e.g. different numbers of cantrips.
 
+What #3 and #4 mean together is that we need to pass the player's class and level into the function as parameters, and from there the function
+can look up the existing tables to work with as we have defined.
+
+For now, we're going to ignore half-casters and the like.
+*/
+
+function generateSpellList(playerClass: string = "Sorcerer", playerLevel: number = 1){
+  //this method is going to just use the baked-in playerCharcter object for now.
+  //first, we have to check for how many cantrips a given class gets.
 }
 
 function getRandomMonster(amountToGenerate: number){
@@ -679,6 +797,7 @@ function getRandomClass(){
 // }
 
 function getCharacterStats(generatorMethod: string, useSmart: boolean = false, useTashasRules: boolean = false){
+  debugger
   let finalResult: number[] = [0, 0, 0, 0, 0, 0];
   let generatedStats: number[] = [0, 0, 0, 0, 0, 0];
   let usingSmartGeneration: boolean = useSmart;
@@ -691,8 +810,8 @@ function getCharacterStats(generatorMethod: string, useSmart: boolean = false, u
         }
       finalResult = generatedStats;
       if(usingSmartGeneration){
-        let primaryAttributes = ["STR", "DEX"];
-        let secondaryAttributes = ["DEX", "CON"];
+        let primaryAttributes = playerCharacter.primary_attribute;
+        let secondaryAttributes = playerCharacter.secondary_attribute;
         let sortedFinalResult = sortArrayDescending(finalResult);
         let smartSortedArray: number[] = [0, 0, 0, 0, 0, 0];
         while (sortedFinalResult.length > 0) {
@@ -842,8 +961,8 @@ function getCharacterStats(generatorMethod: string, useSmart: boolean = false, u
         }
       finalResult = generatedStats;
       if(usingSmartGeneration){
-        let primaryAttributes = ["STR", "DEX"];
-        let secondaryAttributes = ["DEX", "CON"];
+        let primaryAttributes = playerCharacter.primary_attribute;
+        let secondaryAttributes = playerCharacter.secondary_attribute;
         let sortedFinalResult = sortArrayDescending(finalResult);
         let smartSortedArray: number[] = [0, 0, 0, 0, 0, 0];
         while (sortedFinalResult.length > 0) {
@@ -995,8 +1114,8 @@ function getCharacterStats(generatorMethod: string, useSmart: boolean = false, u
       }
       finalResult = generatedStats;
       if(usingSmartGeneration){
-        let primaryAttributes = ["STR", "DEX"];
-        let secondaryAttributes = ["DEX", "CON"];
+        let primaryAttributes = playerCharacter.primary_attribute;
+        let secondaryAttributes = playerCharacter.secondary_attribute;
         let sortedFinalResult = sortArrayDescending(finalResult);
         let smartSortedArray: number[] = [0, 0, 0, 0, 0, 0];
         while (sortedFinalResult.length > 0) {
@@ -1150,7 +1269,7 @@ function getRandomRace(){
 
 // this function needs to roll, IN ORDER, Class, Stat Spread, Race
 // however, for the time being we can assume Tasha's 2-1 rule
-function rollBasicCharacter(generatorMethod: string, useSmart: boolean = true){
+function rollBasicCharacter(generatorMethod: string, playerLevel: number, useSmart: boolean = true, useTashasRules: boolean = true){
   const rolledClass: string = getRandomClass();
   playerCharacter.class = rolledClass;
 
@@ -1162,119 +1281,310 @@ function rollBasicCharacter(generatorMethod: string, useSmart: boolean = true){
       playerCharacter.hit_points = characterClasses.barbarian.hit_die;
       playerCharacter.primary_attribute = characterClasses.barbarian.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.barbarian.secondary_attribute;
+      playerCharacter.numberOfCantrips = 0;
       break;
     case "Bard":
       playerCharacter.hit_points = characterClasses.bard.hit_die;
       playerCharacter.primary_attribute = characterClasses.bard.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.bard.secondary_attribute;
+      playerCharacter.numberOfCantrips = 2;
       break;
     case "Cleric":
       playerCharacter.hit_points = characterClasses.cleric.hit_die;
       playerCharacter.primary_attribute = characterClasses.cleric.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.cleric.secondary_attribute;
+      playerCharacter.numberOfCantrips = 3;
       break;
     case "Druid":
       playerCharacter.hit_points = characterClasses.druid.hit_die;
       playerCharacter.primary_attribute = characterClasses.druid.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.druid.secondary_attribute;
+      playerCharacter.numberOfCantrips = 2;
       break;
     case "Fighter":
       playerCharacter.hit_points = characterClasses.fighter.hit_die;
       playerCharacter.primary_attribute = characterClasses.fighter.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.fighter.secondary_attribute;
+      playerCharacter.numberOfCantrips = 0;
       break;
     case "Monk":
       playerCharacter.hit_points = characterClasses.monk.hit_die;
       playerCharacter.primary_attribute = characterClasses.monk.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.monk.secondary_attribute;
+      playerCharacter.numberOfCantrips = 0;
       break;
     case "Paladin":
       playerCharacter.hit_points = characterClasses.paladin.hit_die;
       playerCharacter.primary_attribute = characterClasses.paladin.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.paladin.secondary_attribute;
+      playerCharacter.numberOfCantrips = 0;
+      playerCharacter.isHalfCaster = true;
       break;
     case "Ranger":
       playerCharacter.hit_points = characterClasses.ranger.hit_die;
       playerCharacter.primary_attribute = characterClasses.ranger.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.ranger.secondary_attribute;
+      playerCharacter.numberOfCantrips = 0;
+      playerCharacter.isHalfCaster = true;
       break;
     case "Rogue":
       playerCharacter.hit_points = characterClasses.rogue.hit_die;
       playerCharacter.primary_attribute = characterClasses.rogue.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.rogue.secondary_attribute;
+      playerCharacter.numberOfCantrips = 0;
       break;
     case "Sorcerer":
       playerCharacter.hit_points = characterClasses.sorcerer.hit_die;
       playerCharacter.primary_attribute = characterClasses.sorcerer.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.sorcerer.secondary_attribute;
+      playerCharacter.numberOfCantrips = 4;
       break;
     case "Warlock":
       playerCharacter.hit_points = characterClasses.warlock.hit_die;
       playerCharacter.primary_attribute = characterClasses.warlock.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.warlock.secondary_attribute;
+      playerCharacter.numberOfCantrips = 2;
       break;
     case "Wizard":
       playerCharacter.hit_points = characterClasses.wizard.hit_die;
       playerCharacter.primary_attribute = characterClasses.wizard.primary_attribute;
       playerCharacter.secondary_attribute = characterClasses.wizard.secondary_attribute;
+      playerCharacter.numberOfCantrips = 3;
       break;
   }
-  playerCharacter.stats = getCharacterStats(generatorMethod, useSmart);
+  //theoretically this should adjust your primary and secondary attributes for the getCharacterStats() method
+  playerCharacter.stats = getCharacterStats(generatorMethod, useSmart, useTashasRules);
+  playerCharacter.level = playerLevel;
+  console.log(playerCharacter);
 }
 
   return (
 
-    <main className="flex min-h-screen flex-col items-center justify-between p-8 main-content-area" style = {{backgroundImage: "radial-gradient(#fdfde3, #fafad2)"}}>
+    <main className="flex min-h-screen flex-col items-center justify-between p-8 main-content-area" style = {{backgroundImage: "radial-gradient(hsl(60, 87%, 94%), hsl(60, 80%, 90%))"}}>
 
-      <h1 style = {{fontSize: "72px", fontFamily: "serif"}}> Dungeons and Dragons Randomizer </h1>
+      <h1 style = {{fontSize: "72px", fontFamily: "serif", fontWeight: "bold", letterSpacing: "-2px", textShadow: "hsla(0, 0%, 0%, 0.2) 1px 1px 2px", marginBottom: "16px"}}> Dungeons and Dragons Randomizer </h1>
 
-      <div id = "testDiv" className = "flex" style = {{width: "auto", height: "25%", border: "solid", justifyContent: "center", alignItems: "center", padding: "10px", borderRadius: "12px"}}>
+      <div id = "testDiv" className = "flex" style = {{width: "auto", height: "25%", border: "none", justifyContent: "center", marginBottom: "16px", alignItems: "center", padding: "10px", borderRadius: "12px", backgroundColor: "hsl(0 100% 100%)", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)"}}>
 
-        <button id = "magicItemButton" onClick = {() =>{setButtonText1(StructuredArray(getRandomMagicItem(3)));}} onMouseOver = {() => {setMysteryButtonColor1('darkred'); setMysteryButtonBorder1('solid black 2px');}} 
-                onMouseLeave = {() => {setMysteryButtonColor1('black'); setMysteryButtonBorder1('solid white 2px');}} 
-                style = {{width: "100px", height: "100px", backgroundColor: `${mysteryButtonColor1}`, color: "white", border: `${mysteryButtonBorder1}`, borderRadius: "12px"}}>
+        <button id = "magicItemButton" onClick = {() =>{setButtonText1(StructuredArray(getRandomMagicItem(3)));}} onMouseOver = {() => {setgeneratorButtonColor1("hsl(15, 35%, 50%)"); setgeneratorButtonShadow1("none");}} 
+                onMouseLeave = {() => {setgeneratorButtonColor1("hsl(60, 50%, 75%)"); setgeneratorButtonShadow1("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");}} 
+                style = {{width: "100px", height: "100px", backgroundColor: `${generatorButtonColor1}`, color: "white", boxShadow: `${generatorButtonShadow1}`, borderRadius: "12px", color: "hsl(0, 0%, 12%)"}}>
                 Generate Magic Item
                 </button>
         
-        <button id = "spellButton" onClick = {() =>{setButtonText2(getRandomSpell());}} onMouseOver = {() => {setMysteryButtonColor2('darkred'); setMysteryButtonBorder2('solid black 2px');}} 
-                onMouseLeave = {() => {setMysteryButtonColor2('black'); setMysteryButtonBorder2('solid white 2px');}} 
-                style = {{width: "100px", height: "100px", backgroundColor: `${mysteryButtonColor2}`, color: "white", border: `${mysteryButtonBorder2}`, borderRadius: "12px", marginLeft: "20px"}}>
+        <button id = "spellButton" onClick = {() =>{setButtonText2(StructuredArray(getMultipleSpells(8)));}} onMouseOver = {() => {setgeneratorButtonColor2("hsl(15, 35%, 50%)"); setgeneratorButtonShadow2("none");}} 
+                onMouseLeave = {() => {setgeneratorButtonColor2("hsl(60, 50%, 75%)"); setgeneratorButtonShadow2("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");}} 
+                style = {{width: "100px", height: "100px", backgroundColor: `${generatorButtonColor2}`, color: "white", boxShadow: `${generatorButtonShadow2}`, borderRadius: "12px", marginLeft: "20px", color: "hsl(0, 0%, 12%)"}}>
                 Generate Spell
                 </button>
 
-        <button id = "monsterButton" onClick = {() =>{setButtonText3(StructuredArray(getRandomMonster(10)));}} onMouseOver = {() => {setMysteryButtonColor3('darkred'); setMysteryButtonBorder3('solid black 2px');}} 
-                onMouseLeave = {() => {setMysteryButtonColor3('black'); setMysteryButtonBorder3('solid white 2px');}} 
-                style = {{width: "100px", height: "100px", backgroundColor: `${mysteryButtonColor3}`, color: "white", border: `${mysteryButtonBorder3}`, borderRadius: "12px", marginLeft: "20px"}}>
+        <button id = "monsterButton" onClick = {() =>{setButtonText3(StructuredArray(getRandomMonster(10)));}} onMouseOver = {() => {setgeneratorButtonColor3("hsl(15, 35%, 50%)"); setgeneratorButtonShadow3("none");}} 
+                onMouseLeave = {() => {setgeneratorButtonColor3("hsl(60, 50%, 75%)"); setgeneratorButtonShadow3("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");}} 
+                style = {{width: "100px", height: "100px", backgroundColor: `${generatorButtonColor3}`, color: "white", boxShadow: `${generatorButtonShadow3}`, borderRadius: "12px", marginLeft: "20px", color: "hsl(0, 0%, 12%)"}}>
                 Generate Monster
                 </button>
         
-        <button id = "inventoryButton" onClick = {() =>{setButtonText4(StructuredArray(getRandomInventoryItem(10)));}} onMouseOver = {() => {setMysteryButtonColor4('darkred'); setMysteryButtonBorder4('solid black 2px');}} 
-                onMouseLeave = {() => {setMysteryButtonColor4('black'); setMysteryButtonBorder4('solid white 2px');}} 
-                style = {{width: "100px", height: "100px", backgroundColor: `${mysteryButtonColor4}`, color: "white", border: `${mysteryButtonBorder4}`, borderRadius: "12px", marginLeft: "20px"}}>
+        <button id = "inventoryButton" onClick = {() =>{setButtonText4(StructuredArray(getRandomInventoryItem(10)));}} onMouseOver = {() => {setgeneratorButtonColor4("hsl(15, 35%, 50%)"); setgeneratorButtonShadow4("none");}} 
+                onMouseLeave = {() => {setgeneratorButtonColor4("hsl(60, 50%, 75%)"); setgeneratorButtonShadow4("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");}} 
+                style = {{width: "100px", height: "100px", backgroundColor: `${generatorButtonColor4}`, color: "white", boxShadow: `${generatorButtonShadow4}`, borderRadius: "12px", marginLeft: "20px", color: "hsl(0, 0%, 12%)"}}>
                 Generate Inventory
                 </button>
 
-        <button id = "classButton" onClick = {() =>{setButtonText5(getRandomClass());}} onMouseOver = {() => {setMysteryButtonColor5('darkred'); setMysteryButtonBorder5('solid black 2px');}} 
-                onMouseLeave = {() => {setMysteryButtonColor5('black'); setMysteryButtonBorder5('solid white 2px');}} 
-                style = {{width: "100px", height: "100px", backgroundColor: `${mysteryButtonColor5}`, color: "white", border: `${mysteryButtonBorder5}`, borderRadius: "12px", marginLeft: "20px"}}>
+        <button id = "classButton" onClick = {() =>{setButtonText5(getRandomClass());}} onMouseOver = {() => {setgeneratorButtonColor5("hsl(15, 35%, 50%)"); setgeneratorButtonShadow5("none");}} 
+                onMouseLeave = {() => {setgeneratorButtonColor5("hsl(60, 50%, 75%)"); setgeneratorButtonShadow5("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");}} 
+                style = {{width: "100px", height: "100px", backgroundColor: `${generatorButtonColor5}`, color: "white", boxShadow: `${generatorButtonShadow5}`, borderRadius: "12px", marginLeft: "20px", color: "hsl(0, 0%, 12%)"}}>
                 Generate Class
                 </button>
 
-        <button id = "statsButton" onClick = {() =>{setButtonText6(StructuredArray(getCharacterStats("4d6_drop_lowest", true, true)));}} onMouseOver = {() => {setMysteryButtonColor6('darkred'); setMysteryButtonBorder6('solid black 2px');}} 
-                onMouseLeave = {() => {setMysteryButtonColor6('black'); setMysteryButtonBorder6('solid white 2px');}} 
-                style = {{width: "100px", height: "100px", backgroundColor: `${mysteryButtonColor6}`, color: "white", border: `${mysteryButtonBorder6}`, borderRadius: "12px", marginLeft: "20px"}}>
+        <button id = "statsButton" onClick = {() =>{setButtonText6(StructuredArray(getCharacterStats("4d6_drop_lowest", true, true)));}} onMouseOver = {() => {setgeneratorButtonColor6("hsl(15, 35%, 50%)"); setgeneratorButtonShadow6("none");}} 
+                onMouseLeave = {() => {setgeneratorButtonColor6("hsl(60, 50%, 75%)"); setgeneratorButtonShadow6("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");}} 
+                style = {{width: "100px", height: "100px", backgroundColor: `${generatorButtonColor6}`, color: "white", boxShadow: `${generatorButtonShadow6}`, borderRadius: "12px", marginLeft: "20px", color: "hsl(0, 0%, 12%)"}}>
                 Generate Stats
                 </button>
 
-        <button id = "raceButton" onClick = {() =>{setButtonText7(getRandomRace());}} onMouseOver = {() => {setMysteryButtonColor7('darkred'); setMysteryButtonBorder7('solid black 2px');}} 
-                onMouseLeave = {() => {setMysteryButtonColor7('black'); setMysteryButtonBorder7('solid white 2px');}} 
-                style = {{width: "100px", height: "100px", backgroundColor: `${mysteryButtonColor7}`, color: "white", border: `${mysteryButtonBorder7}`, borderRadius: "12px", marginLeft: "20px"}}>
+        <button id = "raceButton" onClick = {() =>{setButtonText7(getRandomRace());}} onMouseOver = {() => {setgeneratorButtonColor7("hsl(15, 35%, 50%)"); setgeneratorButtonShadow7("none");}} 
+                onMouseLeave = {() => {setgeneratorButtonColor7("hsl(60, 50%, 75%)"); setgeneratorButtonShadow7("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");}} 
+                style = {{width: "100px", height: "100px", backgroundColor: `${generatorButtonColor7}`, color: "white", boxShadow: `${generatorButtonShadow7}`, borderRadius: "12px", marginLeft: "20px", color: "hsl(0, 0%, 12%)"}}>
                 Generate Race
                 </button>
 
       </div>
 
-      <div id = "optionsDiv" className = "flex" style = {{width: "auto", height: "25%", border: "solid", justifyContent: "center", alignItems: "center", padding: "10px", borderRadius: "12px", marginTop: "25px"}}>
+{/*  <div id = "resultTextHolder" className = "items-center flex flex-col" style = {{border: "black solid 2px", width: "1000px", height: "600px", marginTop: "25px", marginBottom: "25px", borderRadius: "12px", overflowY: "scroll", overflowX: "hidden"}}>
+
+      <div id = "generateSpellText" onClick = {() => {setButtonText2("");}} style = {{fontSize: 36}}> {buttonText2} </div>
+
+  </div>*/}
+
+    <div id = "firstRowResults" style = {{display: "flex"}}>
+      <div className = "items-center text-center place-items-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px"}}>
+        <h1 id = "magicItemsCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Magic Items </h1>
+        <hr />
+
+        <div id = "magicItemsCollection" style = {{paddingTop: "25px", 
+          height: "50%", 
+          borderTop: "solid black 2px", 
+          borderBottom: "solid black 2px", 
+          fontSize: "24px",
+          overflowX: "hidden",
+          overflowY: "scroll"}}>
+            <div id = "generateMagicItemText" onClick = {() => {}} style = {{fontSize: 24}}> {buttonText1} </div>
+        </div>
+
+        <button id = "magicItemsClearButton" onClick = {() => {setButtonText1("");}} 
+          style = {{width: "35%",
+          height: "10%", 
+          backgroundColor: "hsl(60, 70%, 85%)", 
+          boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", 
+          borderRadius: "12px", 
+          marginTop: "30px"}}> Clear </button>
+      </div>
+
+      <div className = "items-center text-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px", marginBottom: "15px"}}>
+        <h1 id = "spellCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Spell List </h1>
+        <hr />
+
+        <div id = "spellCollection" style = {{paddingTop: "25px", 
+          height: "50%", 
+          borderTop: "solid black 2px", 
+          borderBottom: "solid black 2px", 
+          fontSize: "24px",
+          overflowX: "hidden",
+          overflowY: "scroll"}}>
+            <div id = "generateSpellText" onClick = {() => {setButtonText2("");}} style = {{fontSize: 24}}> {buttonText2} </div>
+        </div>
+
+        <button id = "spellCollectionClearButton" onClick = {() => {}} 
+          style = {{width: "35%",
+          height: "10%", 
+          backgroundColor: "hsl(60, 70%, 85%)", 
+          boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)",  
+          borderRadius: "12px", 
+          marginTop: "30px"}}> Clear </button>
+      </div>
+
+    <div className = "items-center text-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px"}}>
+      <h1 id = "inventoryCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Inventory </h1>
+      <hr />
+
+      <div id = "inventoryCollection" style = {{paddingTop: "25px", 
+        height: "50%", 
+        borderTop: "solid black 2px", 
+        borderBottom: "solid black 2px", 
+        fontSize: "24px",
+        overflowX: "hidden",
+        overflowY: "scroll"}}>
+          <div id = "generateInventoryText" onClick = {() => {}} style = {{fontSize: 24}}> {buttonText4} </div>
+      </div>
+
+      <button id = "inventoryCollectionClearButton" onClick = {() => {setButtonText4("");}} 
+        style = {{width: "35%",
+        height: "10%", 
+        backgroundColor: "hsl(60, 70%, 85%)", 
+        boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)",
+        borderRadius: "12px", 
+        marginTop: "30px"}}> Clear </button>
+    </div>
+  </div>
+
+  <div id = "secondRowResults" style = {{display: "flex"}}>
+    <div className = "items-center text-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px"}}>
+      <h1 id = "monsterCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Monsters </h1>
+      <hr />
+
+      <div id = "monsterCollection" style = {{paddingTop: "25px", 
+        height: "50%", 
+        borderTop: "solid black 2px", 
+        borderBottom: "solid black 2px", 
+        fontSize: "24px",
+        overflowX: "hidden",
+        overflowY: "scroll"}}>
+          <div id = "generateMonsterText" onClick = {() => {}} style = {{fontSize: 24}}> {buttonText3} </div>
+      </div>
+
+      <button id = "monsterCollectionClearButton" onClick = {() => {setButtonText3("");}} 
+        style = {{width: "35%",
+        height: "10%", 
+        backgroundColor: "hsl(60, 70%, 85%)", 
+        boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", 
+        borderRadius: "12px", 
+        marginTop: "30px"}}> Clear </button>
+  </div>
+
+    <div className = "items-center text-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px"}}>
+      <h1 id = "characterClassCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Class </h1>
+      <hr />
+
+      <div id = "characterClassCollection" style = {{paddingTop: "25px", 
+        height: "50%", 
+        borderTop: "solid black 2px", 
+        borderBottom: "solid black 2px", 
+        fontSize: "24px",
+        overflowX: "hidden",
+        overflowY: "scroll"}}>
+          <div id = "generateClassText" onClick = {() => {}} style = {{fontSize: 36}}> {buttonText5} </div> 
+      </div>
+
+      <button id = "characterClassClearButton" onClick = {() => {setButtonText5("");}} 
+        style = {{width: "35%",
+        height: "10%", 
+        backgroundColor: "hsl(60, 70%, 85%)", 
+        boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)",  
+        borderRadius: "12px", 
+        marginTop: "30px"}}> Clear </button>
+    </div>
+
+    <div className = "items-center text-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px"}}>
+      <h1 id = "statsCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Stats </h1>
+      <hr />
+
+      <div id = "statsCollection" style = {{paddingTop: "25px", 
+        height: "50%", 
+        borderTop: "solid black 2px", 
+        borderBottom: "solid black 2px", 
+        fontSize: "24px",
+        overflowX: "hidden",
+        overflowY: "scroll"}}>
+          <div id = "generateStatsText" onClick = {() => {}} style = {{fontSize: 22}}> {buttonText6} </div>
+        </div>
+
+      <button id = "statsClearButton" onClick = {() => {setButtonText6("");}} 
+        style = {{width: "35%",
+        height: "10%", 
+        backgroundColor: "hsl(60, 70%, 85%)", 
+        boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)",  
+        borderRadius: "12px", 
+        marginTop: "30px"}}> Clear </button>
+    </div>
+  </div>
+
+  <div id = "thirdRowResults" style = {{display: "flex"}}>
+    <div className = "items-center text-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px", marginTop: "30px"}}>
+      <h1 id = "raceCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Race </h1>
+      <hr />
+
+      <div id = "raceCollection" style = {{paddingTop: "25px", 
+        height: "50%", 
+        borderTop: "solid black 2px", 
+        borderBottom: "solid black 2px", 
+        fontSize: "24px",
+        overflowX: "hidden",
+        overflowY: "scroll"}}>
+          <div id = "generateRaceText" onClick = {() => {}} style = {{fontSize: 36}}> {buttonText7} </div>
+        </div>
+
+      <button id = "raceClearButton" onClick = {() => {setButtonText7("");}} 
+        style = {{width: "35%",
+        height: "10%", 
+        backgroundColor: "hsl(60, 70%, 85%)", 
+        boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)",  
+        borderRadius: "12px", 
+        marginTop: "30px"}}> Clear 
+      </button>
+    </div>
+  </div>
+
+<div id = "optionsDiv" className = "flex" style = {{width: "auto", height: "25%", border: "solid", justifyContent: "center", alignItems: "center", padding: "10px", borderRadius: "12px", marginTop: "25px"}}>
 
         <div>
         <fieldset id = "statOptions" style = {{border: "solid black 2px", marginRight: "10px", marginLeft: "10px", padding: "5px"}}>
@@ -1549,197 +1859,11 @@ function rollBasicCharacter(generatorMethod: string, useSmart: boolean = true){
         </div>
       </div>
 
-  <div id = "resultTextHolder" className = "items-center flex flex-col" style = {{border: "black solid 2px", width: "90%", height: "600px", marginTop: "25px", marginBottom: "25px", borderRadius: "12px", overflowY: "scroll", overflowX: "hidden"}}>
-
-      <div id = "generateSpellText" onClick = {() => {setButtonText2("");}} style = {{fontSize: 36}}> {buttonText2} </div>
-
-  </div>
-
-    <div style = {{display: "flex"}}>
-      <div className = "items-center text-center place-items-center" style = {{width: "500px", height: "500px", border: "solid 2px black", backgroundColor: "#eeeeee", marginRight: "15px"}}>
-        <h1 style = {{padding: "35px", fontSize: "35px"}}> Magic Items </h1>
-        <hr />
-
-        <div id = "magicItemsCollection" style = {{paddingTop: "25px", 
-          height: "50%", 
-          borderTop: "solid black 2px", 
-          borderBottom: "solid black 2px", 
-          color: `${colorRandomizerTextColor}`,
-          fontSize: "24px",
-          backgroundColor: `${colorRandomizerValue}`,
-          overflowX: "hidden",
-          overflowY: "scroll"}}>
-            <div id = "generateMagicItemText" onClick = {() => {}} style = {{fontSize: 24}}> {buttonText1} </div>
-        </div>
-
-        <button id = "magicItemsClearButton" onClick = {() => {setButtonText1("");}} 
-          style = {{width: "35%",
-          height: "10%", 
-          backgroundColor: "#bbbbbb", 
-          border: "solid black 2px", 
-          borderRadius: "12px", 
-          marginTop: "30px"}}> Clear </button>
-      </div>
-
-      <div className = "items-center text-center" style = {{width: "500px", height: "500px", border: "solid 2px black", backgroundColor: "#eeeeee", marginRight: "15px", marginBottom: "15px"}}>
-        <h1 style = {{padding: "35px", fontSize: "35px"}}> Spell List </h1>
-        <hr />
-
-        <div id = "spellCollectionWindow" style = {{paddingTop: "25px", 
-          height: "50%", 
-          borderTop: "solid black 2px", 
-          borderBottom: "solid black 2px", 
-          color: `${colorRandomizerTextColor}`,
-          fontSize: "24px",
-          textShadow: "1px 1px 1px #000000",
-          backgroundColor: `${colorRandomizerValue}`,
-          overflowX: "hidden",
-          overflowY: "scroll"}}>
-{/*            <div id = "generateSpellText" onClick = {() => {setButtonText2("");}} style = {{fontSize: 36}}> {buttonText2} </div>*/}
-        </div>
-
-        <button id = "spellCollectionClearButton" onClick = {() => {}} 
-          style = {{width: "35%",
-          height: "10%", 
-          backgroundColor: "#bbbbbb", 
-          border: "solid black 2px", 
-          borderRadius: "12px", 
-          marginTop: "30px"}}> Clear </button>
-      </div>
-
-    <div className = "items-center text-center" style = {{width: "500px", height: "500px", border: "solid 2px black", backgroundColor: "#eeeeee", marginRight: "15px"}}>
-      <h1 style = {{padding: "35px", fontSize: "35px"}}> Inventory </h1>
-      <hr />
-
-      <div id = "inventoryCollectionWindow" style = {{paddingTop: "25px", 
-        height: "50%", 
-        borderTop: "solid black 2px", 
-        borderBottom: "solid black 2px", 
-        color: `${colorRandomizerTextColor}`,
-        fontSize: "24px",
-        backgroundColor: `${colorRandomizerValue}`,
-        overflowX: "hidden",
-        overflowY: "scroll"}}>
-          <div id = "generateInventoryText" onClick = {() => {}} style = {{fontSize: 24}}> {buttonText4} </div>
-      </div>
-
-      <button id = "inventoryCollectionClearButton" onClick = {() => {setButtonText4("");}} 
-        style = {{width: "35%",
-        height: "10%", 
-        backgroundColor: "#bbbbbb", 
-        border: "solid black 2px", 
-        borderRadius: "12px", 
-        marginTop: "30px"}}> Clear </button>
-    </div>
-  </div>
-
-  <div style = {{display: "flex"}}>
-    <div className = "items-center text-center" style = {{width: "500px", height: "500px", border: "solid 2px black", backgroundColor: "#eeeeee", marginRight: "15px"}}>
-      <h1 style = {{padding: "35px", fontSize: "35px"}}> Monsters </h1>
-      <hr />
-
-      <div id = "monsterCollectionWindow" style = {{paddingTop: "25px", 
-        height: "50%", 
-        borderTop: "solid black 2px", 
-        borderBottom: "solid black 2px", 
-        color: `${colorRandomizerTextColor}`,
-        fontSize: "24px",
-        backgroundColor: `${colorRandomizerValue}`,
-        overflowX: "hidden",
-        overflowY: "scroll"}}>
-          <div id = "generateMonsterText" onClick = {() => {}} style = {{fontSize: 24}}> {buttonText3} </div>
-      </div>
-
-      <button id = "monsterCollectionClearButton" onClick = {() => {setButtonText3("");}} 
-        style = {{width: "35%",
-        height: "10%", 
-        backgroundColor: "#bbbbbb", 
-        border: "solid black 2px", 
-        borderRadius: "12px", 
-        marginTop: "30px"}}> Clear </button>
-  </div>
-
-    <div className = "items-center text-center" style = {{width: "500px", height: "500px", border: "solid 2px black", backgroundColor: "#eeeeee", marginRight: "15px"}}>
-      <h1 style = {{padding: "35px", fontSize: "35px"}}> Class </h1>
-      <hr />
-
-      <div id = "characterClassWindow" style = {{paddingTop: "25px", 
-        height: "50%", 
-        borderTop: "solid black 2px", 
-        borderBottom: "solid black 2px", 
-        color: `${colorRandomizerTextColor}`,
-        fontSize: "24px",
-        backgroundColor: `${colorRandomizerValue}`,
-        overflowX: "hidden",
-        overflowY: "scroll"}}>
-          <div id = "generateClassText" onClick = {() => {}} style = {{fontSize: 36}}> {buttonText5} </div> 
-      </div>
-
-      <button id = "characterClassClearButton" onClick = {() => {setButtonText5("");}} 
-        style = {{width: "35%",
-        height: "10%", 
-        backgroundColor: "#bbbbbb", 
-        border: "solid black 2px", 
-        borderRadius: "12px", 
-        marginTop: "30px"}}> Clear </button>
-    </div>
-
-    <div className = "items-center text-center" style = {{width: "500px", height: "500px", border: "solid 2px black", backgroundColor: "#eeeeee", marginRight: "15px"}}>
-      <h1 style = {{padding: "35px", fontSize: "35px"}}> Stats </h1>
-      <hr />
-
-      <div id = "statsWindow" style = {{paddingTop: "25px", 
-        height: "50%", 
-        borderTop: "solid black 2px", 
-        borderBottom: "solid black 2px", 
-        color: `${colorRandomizerTextColor}`,
-        fontSize: "24px",
-        backgroundColor: `${colorRandomizerValue}`,
-        overflowX: "hidden",
-        overflowY: "scroll"}}>
-          <div id = "generateStatsText" onClick = {() => {}} style = {{fontSize: 22}}> {buttonText6} </div>
-        </div>
-
-      <button id = "statsClearButton" onClick = {() => {setButtonText6("");}} 
-        style = {{width: "35%",
-        height: "10%", 
-        backgroundColor: "#bbbbbb", 
-        border: "solid black 2px", 
-        borderRadius: "12px", 
-        marginTop: "30px"}}> Clear </button>
-    </div>
-
-    <div className = "items-center text-center" style = {{width: "500px", height: "500px", border: "solid 2px black", backgroundColor: "#eeeeee", marginRight: "15px"}}>
-      <h1 style = {{padding: "35px", fontSize: "35px"}}> Race </h1>
-      <hr />
-
-      <div id = "raceWindow" style = {{paddingTop: "25px", 
-        height: "50%", 
-        borderTop: "solid black 2px", 
-        borderBottom: "solid black 2px", 
-        color: `${colorRandomizerTextColor}`,
-        fontSize: "24px",
-        backgroundColor: `${colorRandomizerValue}`,
-        overflowX: "hidden",
-        overflowY: "scroll"}}>
-          <div id = "generateRaceText" onClick = {() => {}} style = {{fontSize: 36}}> {buttonText7} </div>
-        </div>
-
-      <button id = "raceClearButton" onClick = {() => {setButtonText7("");}} 
-        style = {{width: "35%",
-        height: "10%", 
-        backgroundColor: "#bbbbbb", 
-        border: "solid black 2px", 
-        borderRadius: "12px", 
-        marginTop: "30px"}}> Clear 
-      </button>
-    </div>
-
-  </div>
-  <button id = "jankyButton" onClick = {() => {getRandomMonsterByCR(2, 5); console.log(generatedMonsterBuffer); setButtonText1(`${generatedMonsterBuffer}`);}} style = {{width: "100px", height: "100px", backgroundColor: "#eeeeee", border: "black solid 2px", marginTop: "25px"}}> PRESS ME </button>
+{/*  <button id = "jankyButton" onClick = {() => {rollBasicCharacter("3d6", 1, true, true); getRandomMonsterByCR(2, 5); console.log(generatedMonsterBuffer); setButtonText1(`${generatedMonsterBuffer}`);}} style = {{width: "100px", height: "100px", backgroundColor: "#eeeeee", border: "black solid 2px", marginTop: "25px"}}> PRESS ME </button>
+  
   <button id = "clearJankyButtonResult" onClick = {() => { clearArray(generatedMonsterBuffer); setButtonText1(`${generatedMonsterBuffer}`);}} style = {{width: "100px", height: "100px", backgroundColor: "#eeeeee", border: "black solid 2px", marginTop: "25px"}}> CLEAR </button>
 
-  <button id = "fillerButton" onClick = {() => {console.log(playerCharacter.name);}} style = {{width: "100px", height: "100px", backgroundColor: "#eeeeee", border: "black solid 2px", marginTop: "25px"}}> Lazy Button </button>
+  <button id = "fillerButton" onClick = {() => {console.log(playerCharacter.name);}} style = {{width: "100px", height: "100px", backgroundColor: "#eeeeee", border: "black solid 2px", marginTop: "25px"}}> Lazy Button </button>*/}
 
 
   </main>
