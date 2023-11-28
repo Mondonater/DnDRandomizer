@@ -4,6 +4,9 @@ import { Component } from 'react'; //this is for class components.
 import ReactDOM from "react-dom/client"; //full disclosure, I'm not sure what this does yet
 import axios from 'axios';
 import Select from 'react-select';
+import "bootstrap/dist/css/bootstrap.css";
+
+//TODO separate out logic into more digestible parts
 
 //this is a functional Component. Components are the bread-and-butter of React.
 export default function Home() {
@@ -32,6 +35,7 @@ const [generatorButtonColor4, setgeneratorButtonColor4] = useState("hsl(60, 50%,
 const [generatorButtonColor5, setgeneratorButtonColor5] = useState("hsl(60, 50%, 75%)");
 const [generatorButtonColor6, setgeneratorButtonColor6] = useState("hsl(60, 50%, 75%)");
 const [generatorButtonColor7, setgeneratorButtonColor7] = useState("hsl(60, 50%, 75%)");
+const [generatorButtonColor8, setgeneratorButtonColor8] = useState("hsl(60, 50%, 75%)");
 
 const [generatorButtonShadow1, setgeneratorButtonShadow1] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
 const [generatorButtonShadow2, setgeneratorButtonShadow2] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
@@ -40,6 +44,7 @@ const [generatorButtonShadow4, setgeneratorButtonShadow4] = useState("inset 0 2p
 const [generatorButtonShadow5, setgeneratorButtonShadow5] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
 const [generatorButtonShadow6, setgeneratorButtonShadow6] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
 const [generatorButtonShadow7, setgeneratorButtonShadow7] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
+const [generatorButtonShadow8, setgeneratorButtonShadow8] = useState("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");
 
 //these hooks are how we're taking things from our initial axios queries, to my understanding. Don't treat these as part of the player character.
 const [cantrips, setCantrips] = useState([]);
@@ -87,6 +92,8 @@ const levelNineSpellArray = [];
 const monsterArray = [];
 const inventoryItemsArray = [];
 const magicItemsArray = [];
+
+
 
 //this is for UI convenience purposes.
 const crListArray = [0, 0.125, 0.25, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
@@ -487,7 +494,7 @@ function StructuredArray(inputArray: string[]){
 }
 
 //this needs an input that assuredly has 10 separate arrays in it... we'll use the interface we made earlier
-//incidentally, for clarity this is to be a React Component
+
 // function StructuredSpellList(playerSpellList: FullSpellList){
 
 // }
@@ -797,7 +804,6 @@ function getRandomClass(){
 // }
 
 function getCharacterStats(generatorMethod: string, useSmart: boolean = false, useTashasRules: boolean = false){
-  debugger
   let finalResult: number[] = [0, 0, 0, 0, 0, 0];
   let generatedStats: number[] = [0, 0, 0, 0, 0, 0];
   let usingSmartGeneration: boolean = useSmart;
@@ -1408,6 +1414,16 @@ function rollBasicCharacter(generatorMethod: string, playerLevel: number, useSma
                 Generate Race
                 </button>
 
+        <button id = "simpleCharacterButton" onClick = {() =>{rollBasicCharacter("3d6", 1, true, true);
+                                                              setButtonText5( playerCharacter.class );
+                                                              setButtonText6(StructuredArray(playerCharacter.stats));
+                                                              setButtonText7( playerCharacter.race );}} 
+                onMouseOver = {() => {setgeneratorButtonColor8("hsl(15, 35%, 50%)"); setgeneratorButtonShadow8("none");}} 
+                onMouseLeave = {() => {setgeneratorButtonColor8("hsl(60, 50%, 75%)"); setgeneratorButtonShadow8("inset 0 2px 2px hsla(0, 0%, 0%, 0.2)");}} 
+                style = {{width: "100px", height: "100px", backgroundColor: `${generatorButtonColor8}`, color: "white", boxShadow: `${generatorButtonShadow8}`, borderRadius: "12px", marginLeft: "20px", color: "hsl(0, 0%, 12%)"}}>
+                Generate Simple Character
+                </button>
+
       </div>
 
 {/*  <div id = "resultTextHolder" className = "items-center flex flex-col" style = {{border: "black solid 2px", width: "1000px", height: "600px", marginTop: "25px", marginBottom: "25px", borderRadius: "12px", overflowY: "scroll", overflowX: "hidden"}}>
@@ -1454,7 +1470,7 @@ function rollBasicCharacter(generatorMethod: string, playerLevel: number, useSma
             <div id = "generateSpellText" onClick = {() => {setButtonText2("");}} style = {{fontSize: 24}}> {buttonText2} </div>
         </div>
 
-        <button id = "spellCollectionClearButton" onClick = {() => {}} 
+        <button id = "spellCollectionClearButton" onClick = {() => {setButtonText2("");}} 
           style = {{width: "35%",
           height: "10%", 
           backgroundColor: "hsl(60, 70%, 85%)", 
@@ -1463,27 +1479,28 @@ function rollBasicCharacter(generatorMethod: string, playerLevel: number, useSma
           marginTop: "30px"}}> Clear </button>
       </div>
 
-    <div className = "items-center text-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px"}}>
-      <h1 id = "inventoryCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Inventory </h1>
+<div className = "items-center text-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px"}}>
+      <h1 id = "raceCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Race </h1>
       <hr />
 
-      <div id = "inventoryCollection" style = {{paddingTop: "25px", 
+      <div id = "raceCollection" style = {{paddingTop: "25px", 
         height: "50%", 
         borderTop: "solid black 2px", 
         borderBottom: "solid black 2px", 
         fontSize: "24px",
         overflowX: "hidden",
         overflowY: "scroll"}}>
-          <div id = "generateInventoryText" onClick = {() => {}} style = {{fontSize: 24}}> {buttonText4} </div>
-      </div>
+          <div id = "generateRaceText" onClick = {() => {}} style = {{fontSize: 36}}> {buttonText7} </div>
+        </div>
 
-      <button id = "inventoryCollectionClearButton" onClick = {() => {setButtonText4("");}} 
+      <button id = "raceClearButton" onClick = {() => {setButtonText7("");}} 
         style = {{width: "35%",
         height: "10%", 
         backgroundColor: "hsl(60, 70%, 85%)", 
-        boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)",
+        boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)",  
         borderRadius: "12px", 
-        marginTop: "30px"}}> Clear </button>
+        marginTop: "30px"}}> Clear 
+      </button>
     </div>
   </div>
 
@@ -1559,28 +1576,27 @@ function rollBasicCharacter(generatorMethod: string, playerLevel: number, useSma
   </div>
 
   <div id = "thirdRowResults" style = {{display: "flex"}}>
-    <div className = "items-center text-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px", marginTop: "30px"}}>
-      <h1 id = "raceCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Race </h1>
+        <div className = "items-center text-center" style = {{width: "500px", height: "500px", boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)", border: "solid 1px hsl(60, 100%, 15%)", backgroundColor: "hsl(60, 70%, 95%)", marginRight: "15px", marginTop: "15px"}}>
+      <h1 id = "inventoryCollectionHolder" style = {{padding: "35px", fontSize: "35px", backgroundColor: "hsl(60, 50%, 75%)"}}> Inventory </h1>
       <hr />
 
-      <div id = "raceCollection" style = {{paddingTop: "25px", 
+      <div id = "inventoryCollection" style = {{paddingTop: "25px", 
         height: "50%", 
         borderTop: "solid black 2px", 
         borderBottom: "solid black 2px", 
         fontSize: "24px",
         overflowX: "hidden",
         overflowY: "scroll"}}>
-          <div id = "generateRaceText" onClick = {() => {}} style = {{fontSize: 36}}> {buttonText7} </div>
-        </div>
+          <div id = "generateInventoryText" onClick = {() => {}} style = {{fontSize: 24}}> {buttonText4} </div>
+      </div>
 
-      <button id = "raceClearButton" onClick = {() => {setButtonText7("");}} 
+      <button id = "inventoryCollectionClearButton" onClick = {() => {setButtonText4("");}} 
         style = {{width: "35%",
         height: "10%", 
         backgroundColor: "hsl(60, 70%, 85%)", 
-        boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)",  
+        boxShadow: "1px 2px 4px hsla(0, 0%, 0%, 0.2)",
         borderRadius: "12px", 
-        marginTop: "30px"}}> Clear 
-      </button>
+        marginTop: "30px"}}> Clear </button>
     </div>
   </div>
 
@@ -1858,14 +1874,12 @@ function rollBasicCharacter(generatorMethod: string, playerLevel: number, useSma
         </fieldset>
         </div>
       </div>
-
-{/*  <button id = "jankyButton" onClick = {() => {rollBasicCharacter("3d6", 1, true, true); getRandomMonsterByCR(2, 5); console.log(generatedMonsterBuffer); setButtonText1(`${generatedMonsterBuffer}`);}} style = {{width: "100px", height: "100px", backgroundColor: "#eeeeee", border: "black solid 2px", marginTop: "25px"}}> PRESS ME </button>
   
-  <button id = "clearJankyButtonResult" onClick = {() => { clearArray(generatedMonsterBuffer); setButtonText1(`${generatedMonsterBuffer}`);}} style = {{width: "100px", height: "100px", backgroundColor: "#eeeeee", border: "black solid 2px", marginTop: "25px"}}> CLEAR </button>
+{/*  <button id = "clearJankyButtonResult" onClick = {() => { clearArray(generatedMonsterBuffer); setButtonText1(`${generatedMonsterBuffer}`);}} style = {{width: "100px", height: "100px", backgroundColor: "#eeeeee", border: "black solid 2px", marginTop: "25px"}}> CLEAR </button>
 
-  <button id = "fillerButton" onClick = {() => {console.log(playerCharacter.name);}} style = {{width: "100px", height: "100px", backgroundColor: "#eeeeee", border: "black solid 2px", marginTop: "25px"}}> Lazy Button </button>*/}
+  <button id = "fillerButton" onClick = {() => {console.log(playerCharacter.name);}} style = {{width: "100px", height: "100px", backgroundColor: "#eeeeee", border: "black solid 2px", marginTop: "25px"}}> Lazy Button </button>
 
-
+*/}
   </main>
   );
 }
